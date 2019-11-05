@@ -82,6 +82,11 @@ public:
 		// vertex count + index count
 		return (m_geom->m_indices.size() * sizeof(int) * 4) / 3 + m_geom->m_p.size() * vertexSize;
 	}
+	
+	const CoreGeometry& getGeometry() const noexcept {
+		return *m_geom;
+	}
+	
 protected:
 	static void copyToVec2(std::vector<ei::Vec2>& dst, std::vector<float>& src)
 	{
