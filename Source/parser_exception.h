@@ -1,5 +1,5 @@
 #pragma once
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 class ParserException : public std::exception
@@ -12,7 +12,7 @@ public:
 	virtual ~ParserException() throw() override
 	{}
 
-	virtual char const* what() const override
+	virtual char const* what() const noexcept override
 	{
 		return m_msg.c_str();
 	}
@@ -29,9 +29,9 @@ private:
 												public: name(const char* at, __VA_ARGS__)\
 												: ParserException(at, message){}}
 
-#define PBRT_EXEPT_CLASS(name, message, ...) class name : public std::exception {\
+#define PBRT_EXEPT_CLASS(name, message, ...) class name : public std::runtime_error {\
 												public: name(__VA_ARGS__)\
-												: exception((message).c_str()){}}
+												: runtime_error((message).c_str()){}}
 
 PARSER_EXCEPT_CLASS(InvalidToken, 
 	"invalid token, found: " + std::string(&found, 1) + " expected: " + expected, 

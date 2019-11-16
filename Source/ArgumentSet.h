@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 namespace util
 {
@@ -157,12 +158,7 @@ namespace util
 			}
 			return false;
 		}
-
-		template<>
-		bool includes(const std::string& name, const char* value) const
-		{
-			return includes(name, std::string(value));
-		}
+		
 		/**
 		 * \brief returns arguments to the provided parameter
 		 * \tparam T conversion type for the arguments
@@ -203,6 +199,13 @@ namespace util
 	private:
 		std::unordered_map<std::string, std::vector<std::string>> m_params;
 	};
+	
+
+	template<>
+	inline bool ArgumentSet::includes(const std::string& name, const char* value) const
+	{
+		return includes(name, std::string(value));
+	}
 
 	template<>
 	inline std::string ArgumentSet::convertString(const std::string& s) noexcept {

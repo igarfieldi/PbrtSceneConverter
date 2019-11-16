@@ -63,7 +63,7 @@ inline std::vector<float> readFloatingFile(std::string filename)
 	size_t size = 0;
 	auto file = openFile(filename, size);
 	if (!file)
-		throw std::exception(("cannot open file " + filename).c_str());
+		throw std::runtime_error(("cannot open file " + filename).c_str());
 
 	System::runtimeInfo("reading float file " + filename);
 	const char* cur = file.get();
@@ -103,11 +103,11 @@ inline std::vector<float> readFloatingFile(std::string filename)
 		}
 		catch (const std::out_of_range&)
 		{
-			throw std::exception(("cannot convert " + text + " to float in file: " + filename + " - out of range").c_str());
+			throw std::runtime_error(("cannot convert " + text + " to float in file: " + filename + " - out of range").c_str());
 		}
 		catch (const std::exception&)
 		{
-			throw std::exception(("cannot convert " + text + " to float in file: " + filename).c_str());
+			throw std::runtime_error(("cannot convert " + text + " to float in file: " + filename).c_str());
 		}
 		cur = skipSpace(cur);
 	}

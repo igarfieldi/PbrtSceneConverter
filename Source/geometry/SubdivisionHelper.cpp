@@ -229,7 +229,7 @@ namespace subdiv {
 
 			if (update < 0)
 			{
-				throw std::exception("SubdivisionHelper::triangleSplit: semantic error !");
+				throw std::runtime_error("SubdivisionHelper::triangleSplit: semantic error !");
 			}
 
 			midPoints[update] = newPoint;

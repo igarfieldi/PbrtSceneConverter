@@ -50,7 +50,7 @@ public:
 	}
 	bool HasNaNs() const {
 		for (int i = 0; i < nSamples; ++i)
-			if (isnan(c[i])) return true;
+			if (std::isnan(c[i])) return true;
 		return false;
 	}
 #pragma region "MATH HELPER"
@@ -109,11 +109,11 @@ public:
 	}
 	friend inline
 		CoefficientSpectrum operator*(float a, const CoefficientSpectrum &s) {
-		assert(!isnan(a) && !s.HasNaNs());
+		assert(!std::isnan(a) && !s.HasNaNs());
 		return s * a;
 	}
 	CoefficientSpectrum operator/(float a) const {
-		assert(!isnan(a));
+		assert(!std::isnan(a));
 		CoefficientSpectrum ret = *this;
 		for (int i = 0; i < nSamples; ++i)
 			ret.c[i] /= a;
@@ -121,7 +121,7 @@ public:
 		return ret;
 	}
 	CoefficientSpectrum &operator/=(float a) {
-		assert(!isnan(a));
+		assert(!std::isnan(a));
 		for (int i = 0; i < nSamples; ++i)
 			c[i] /= a;
 		return *this;

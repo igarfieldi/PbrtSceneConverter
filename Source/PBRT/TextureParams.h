@@ -154,48 +154,6 @@ public:
 		return std::shared_ptr<Texture<T>>();
 	}
 
-	template <>
-	std::shared_ptr<Texture<float>> getTexture(const std::string& n, float def)
-	{
-		std::string name = geomParams.getTexture(n);
-		if (name == "") name = materialParams.getTexture(n);
-
-		if (name != "")
-		{
-			auto it = floatTextures.find(name);
-			if (it != floatTextures.end()) return it->second;
-			System::error("Couldn't find float texture named \"" + name + "\" for parameter \""
-				+ n + "\"");
-		}
-		float val = geomParams.getFloat(n, materialParams.getFloat(n, def));
-		// return constant texture
-		auto tex = std::shared_ptr<Texture<float>>(new Texture<float>);
-		tex->type = Texture<float>::Constant;
-		tex->value = val;
-		return tex;
-	}
-
-	template <>
-	std::shared_ptr<Texture<Spectrum>> getTexture(const std::string& n, Spectrum def)
-	{
-		std::string name = geomParams.getTexture(n);
-		if (name == "") name = materialParams.getTexture(n);
-
-		if (name != "")
-		{
-			auto it = spectrumTextures.find(name);
-			if (it != spectrumTextures.end()) return it->second;
-			System::error("Couldn't find spectrum texture named \"" + name + "\" for parameter \""
-				+ n + "\"");
-		}
-		Spectrum val = geomParams.getSpectrum(n, materialParams.getSpectrum(n, def));
-		// return constant texture
-		auto tex = std::shared_ptr<Texture<Spectrum>>(new Texture<Spectrum>);
-		tex->type = Texture<Spectrum>::Constant;
-		tex->value = val;
-		return tex;
-	}
-
 	std::shared_ptr<Texture<float>> getTextureOrNull(const std::string& n)
 	{
 		std::string name = geomParams.getTexture(n);
@@ -216,5 +174,47 @@ private:
 	ParamSet& geomParams;
 	ParamSet& materialParams;
 };
+
+template <>
+inline std::shared_ptr<Texture<float>> TextureParams::getTexture(const std::string& n, float def)
+{
+	std::string name = geomParams.getTexture(n);
+	if (name == "") name = materialParams.getTexture(n);
+
+	if (name != "")
+	{
+		auto it = floatTextures.find(name);
+		if (it != floatTextures.end()) return it->second;
+		System::error("Couldn't find float texture named \"" + name + "\" for parameter \""
+			+ n + "\"");
+	}
+	float val = geomParams.getFloat(n, materialParams.getFloat(n, def));
+	// return constant texture
+	auto tex = std::shared_ptr<Texture<float>>(new Texture<float>);
+	tex->type = Texture<float>::Constant;
+	tex->value = val;
+	return tex;
+}
+
+template <>
+inline std::shared_ptr<Texture<Spectrum>> TextureParams::getTexture(const std::string& n, Spectrum def)
+{
+	std::string name = geomParams.getTexture(n);
+	if (name == "") name = materialParams.getTexture(n);
+
+	if (name != "")
+	{
+		auto it = spectrumTextures.find(name);
+		if (it != spectrumTextures.end()) return it->second;
+		System::error("Couldn't find spectrum texture named \"" + name + "\" for parameter \""
+			+ n + "\"");
+	}
+	Spectrum val = geomParams.getSpectrum(n, materialParams.getSpectrum(n, def));
+	// return constant texture
+	auto tex = std::shared_ptr<Texture<Spectrum>>(new Texture<Spectrum>);
+	tex->type = Texture<Spectrum>::Constant;
+	tex->value = val;
+	return tex;
+}
 
 size_t getTextureTypeFromString(const std::string& s);

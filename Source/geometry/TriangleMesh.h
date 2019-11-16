@@ -2,6 +2,7 @@
 #include "Shape.h"
 #include <vector>
 #include <cassert>
+#include <cstring>
 #include "../system.h"
 #include <numeric>
 
@@ -91,7 +92,7 @@ protected:
 	static void copyToVec2(std::vector<ei::Vec2>& dst, std::vector<float>& src)
 	{
 		dst.assign(src.size() / 2, ei::Vec2(0.0f));
-		memcpy(dst.data(), src.data(), dst.size() * sizeof(dst[0]));
+		std::memcpy(dst.data(), src.data(), dst.size() * sizeof(dst[0]));
 	}
 	void verifyData(bool nothrow)
 	{
@@ -124,7 +125,7 @@ protected:
 		// test indices
 		for (const auto& i : m_geom->m_indices)
 			if (i < 0 || i >= m_geom->m_indices.size())
-				throw std::exception("trianglemesh has out of-bounds indices");
+				throw std::runtime_error("trianglemesh has out of-bounds indices");
 
 		if (m_geom->m_n.size())
 		{

@@ -27,7 +27,7 @@ set(PBRTCONVERTER_LIB_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/system.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/config/eiconfig.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/geometry/LoopSubDiv.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/geometry/PlyMesh.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/geometry/Plymesh.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/geometry/Shape.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/geometry/Sphere.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/geometry/TriangleMesh.h"
@@ -42,6 +42,8 @@ set(PBRTCONVERTER_LIB_HEADERS
 if(WIN32)
 	set(PBRTCONVERTER_FILE_DIALOG_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Source/filedialog/nfd_win.cpp")
 else()
+	FIND_PACKAGE(PkgConfig REQUIRED)
+	PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-3.0)
 	set(PBRTCONVERTER_FILE_DIALOG_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Source/filedialog/nfd_gtk.c")
 endif()
 
@@ -115,7 +117,7 @@ if(PBRTCONVERTER_BUILD_APP)
 		"${CMAKE_CURRENT_SOURCE_DIR}/Source/main.cpp"
 	)
 	target_compile_definitions(PBRTConverter PRIVATE _CRT_SECURE_NO_WARNINGS)
-	target_compile_features(PBRTConverter PRIVATE cxx_std_11)
+	target_compile_features(PBRTConverter PRIVATE cxx_std_14)
 	target_link_libraries(PBRTConverter PBRTConverterLib)
 	
 	install(TARGETS PBRTConverter
@@ -129,7 +131,7 @@ if(PBRTCONVERTER_BUILD_APP)
 endif()
 
 target_compile_definitions(PBRTConverterLib PRIVATE _CRT_SECURE_NO_WARNINGS)
-target_compile_features(PBRTConverterLib PRIVATE cxx_std_11)
+target_compile_features(PBRTConverterLib PRIVATE cxx_std_14)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${PBRTCONVERTER_SOURCE_FILES})
 
 # Target for the header-only dependency w.o CMake support
@@ -152,6 +154,13 @@ target_include_directories(PBRTConverterLib
 		$<INSTALL_INTERFACE:include>
 )
 target_link_libraries(PBRTConverterLib epsilon)
+if(NOT WIN32)
+	target_include_directories(PBRTConverterLib
+		PUBLIC
+			${GTK3_INCLUDE_DIRS}
+	)
+	target_link_libraries(PBRTConverterLib ${GTK3_LIBRARY_DIRS})
+endif()
 
 # Create version compatibility
 include(CMakePackageConfigHelpers)
@@ -173,7 +182,7 @@ install(TARGETS PBRTConverterLib epsilon
 
 # Create the configuration file to allow find_package(PBRTConverterLib)
 configure_package_config_file(
-    "${PROJECT_SOURCE_DIR}/cmake/pbrtconverterConfig.cmake.in"
+    "${PROJECT_SOURCE_DIR}/CMake/pbrtconverterConfig.cmake.in"
     "${PROJECT_BINARY_DIR}/pbrtconverterConfig.cmake"
     INSTALL_DESTINATION lib/cmake/mylib
 )

@@ -4,8 +4,10 @@
 #include <cassert>
 #include <chrono>
 
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#endif // _WIN32
 
 std::string System::s_curDir;
 bool System::argSilent = false;
@@ -17,20 +19,31 @@ static std::vector<std::pair<std::string, size_t>> s_errors;
 static std::vector<std::pair<std::string, size_t>> s_infos;
 static ei::Mat4x4 s_axisSwap = ei::identity4x4();
 
+#ifdef _WIN32
+using Word = Word;
 static 	HANDLE hstdout = nullptr;
+#else // _WIN32
+using Word = int;
+#endif // _WIN32
 
 void System::init()
 {
+#ifdef _WIN32
 	hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif // _WIN32
 }
 
-void setConsoleColor(WORD wd)
+void setConsoleColor(Word wd)
 {
+#ifdef _WIN32
 	SetConsoleTextAttribute(hstdout, wd);
+#endif // _WIN32
 }
 void setConsoleColorDefault()
 {
+#ifdef _WIN32
 	SetConsoleTextAttribute(hstdout, 0x07);
+#endif // _WIN32
 }
 // returns true if it should be displayed
 bool addMessage(std::vector<std::pair<std::string, size_t>>& vec, const std::string& msg)
@@ -192,11 +205,15 @@ void System::displayInfos()
 
 size_t System::getAvailableRam()
 {
+#ifdef _WIN32
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(memInfo);
 	GlobalMemoryStatusEx(&memInfo);
 
 	return memInfo.ullAvailPhys;
+#else // _WIN32
+	return 0u;
+#endif
 }
 
 void System::setOutputDirectory(const std::string& dir)
@@ -212,7 +229,7 @@ void System::setOutputDirectory(const std::string& dir)
 		return;
 	}
 	error("cannot write in output directory " + dir);
-	throw std::exception("unable to write to output directory");
+	throw std::runtime_error("unable to write to output directory");
 }
 
 std::string System::getOutputDirectory()

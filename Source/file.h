@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <string>
+#include <cstring>
 #include <iostream>
 
 inline std::unique_ptr<char[]> openFile(const std::string& filename, size_t& filesize)
@@ -22,7 +22,7 @@ inline std::unique_ptr<char[]> openFile(const std::string& filename, size_t& fil
 	fclose(pFile);
 
 	// safety
-	memset(file.get() + filesize, 0, puffer);
+	std::memset(file.get() + filesize, 0, puffer);
 	
 	if (count != filesize)
 		System::warning("could not read all bytes from " + filename);
@@ -39,7 +39,7 @@ inline void saveFile(const std::string& filename, const std::string& txt)
 		return;
 	}
 
-	fprintf(pFile, txt.c_str());
+	fprintf(pFile, "%s", txt.c_str());
 
 	fclose(pFile);
 }

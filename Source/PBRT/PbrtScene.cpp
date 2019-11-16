@@ -8,8 +8,14 @@
 #include "../geometry/Plymesh.h"
 #include "../geometry/LoopSubDiv.h"
 
-#define ASSERT_TRANS_ARGS(number) if(args.size() != number) {System::error(std::string(__FUNCSIG__) + " invalid number of args\n");} else
-#define ASSERT_BLOCK(block) if(m_block != block) {System::error(std::string(__FUNCSIG__) + " called in wrong block. will be ignored"); return;}
+#ifdef _WIN32
+#define FUNCTION_NAME __FUNCSIG__
+#else // _WIN32
+#define FUNCTION_NAME __PRETTY_FUNCTION__
+#endif // _WIN32
+
+#define ASSERT_TRANS_ARGS(number) if(args.size() != number) {System::error(std::string(FUNCTION_NAME) + " invalid number of args\n");} else
+#define ASSERT_BLOCK(block) if(m_block != block) {System::error(std::string(FUNCTION_NAME) + " called in wrong block. will be ignored"); return;}
 
 // TODO in eplsilon?
 inline void CoordinateSystem(const Vector &v1, Vector *v2, Vector *v3) {
@@ -367,7 +373,7 @@ void PbrtScene::apiObjectBegin(const std::string& n)
 	ASSERT_BLOCK(Block::World);
 	apiAttributeBegin();
 	if (m_pCurInstance)
-		std::exception("ObjectBegin called inside of instance definition");
+		std::runtime_error("ObjectBegin called inside of instance definition");
 	m_instances[n] = std::vector<std::unique_ptr<Shape>>();
 	m_pCurInstance = &m_instances[n];
 }
@@ -376,7 +382,7 @@ void PbrtScene::apiObjectEnd()
 {
 	ASSERT_BLOCK(Block::World);
 	if (!m_pCurInstance)
-		throw std::exception("ObjectEnd called outside of instance definition");
+		throw std::runtime_error("ObjectEnd called outside of instance definition");
 	m_pCurInstance = nullptr;
 	apiAttributeEnd();
 }
@@ -389,10 +395,10 @@ void PbrtScene::apiObjectInstance(const std::string& n)
 
 	ASSERT_BLOCK(Block::World);
 	if (m_pCurInstance)
-		throw std::exception("ObjectInstance can't be called inside instance definition");
+		throw std::runtime_error("ObjectInstance can't be called inside instance definition");
 	auto in = m_instances.find(n);
 	if (in == m_instances.end())
-		throw std::exception(("Unable to find instance named " + n).c_str());
+		throw std::runtime_error(("Unable to find instance named " + n).c_str());
 
 	const auto& vec = in->second;
 	if (vec.size() == 0) return;
@@ -865,7 +871,7 @@ std::shared_ptr<Material> PbrtScene::GraphicsState::createMaterial(ParamSet& set
 	if (!mtl)
 		mtl = makeMaterial("matte", mp, toWorld);
 	if (!mtl)
-		throw std::exception("unable to create matte material?!");
+		throw std::runtime_error("unable to create matte material?!");
 
 	return mtl;
 }
