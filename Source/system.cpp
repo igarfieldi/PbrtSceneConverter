@@ -20,7 +20,7 @@ static std::vector<std::pair<std::string, size_t>> s_infos;
 static ei::Mat4x4 s_axisSwap = ei::identity4x4();
 
 #ifdef _WIN32
-using Word = Word;
+using Word = WORD;
 static 	HANDLE hstdout = nullptr;
 #else // _WIN32
 using Word = int;

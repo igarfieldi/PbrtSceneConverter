@@ -3,7 +3,8 @@
 
 #include <algorithm>
 #include <functional>
-#include <assert.h>
+#include <stdexcept>
+#include <cassert>
 
 namespace subdiv {
 	Triangle::Triangle()
